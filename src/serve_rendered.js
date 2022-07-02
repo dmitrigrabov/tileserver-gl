@@ -833,6 +833,7 @@ export const serve_rendered = {
             res.set({
               'Last-Modified': item.lastModified,
               'Content-Type': `image/${format}`,
+              'Cache-Control': 'public, max-age=28800'
             });
             return res.status(200).send(buffer);
           });

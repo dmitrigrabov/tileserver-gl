@@ -263,6 +263,18 @@ fs.stat(path.resolve(opts.config), (err, stats) => {
             break;
           }
         }
+        if (mbtiles) {
+          console.log(`No MBTiles specified, using ${mbtiles}`);
+          return startWithMBTiles(mbtiles);
+        } else {
+          const url = 'https://github.com/maptiler/tileserver-gl/releases/download/v1.3.0/zurich_switzerland.mbtiles';
+          const filename = 'zurich_switzerland.mbtiles';
+          const stream = fs.createWriteStream(filename);
+          console.log(`No MBTiles found`);
+          console.log(`[DEMO] Downloading sample data (${filename}) from ${url}`);
+          stream.on('finish', () => startWithMBTiles(filename));
+          return request.get(url).pipe(stream);
+        }
       }
       if (inputFile) {
         console.log(`No input file specified, using ${inputFile}`);
@@ -277,6 +289,9 @@ fs.stat(path.resolve(opts.config), (err, stats) => {
         stream.on('finish', () => StartWithInputFile(filename));
         return request.get(url).pipe(stream);
       }
+    } else {
+      console.log(`Using specified config file from ${opts.config}`);
+      return startServer(opts.config, null);
     }
   } else {
     console.log(`Using specified config file from ${opts.config}`);
