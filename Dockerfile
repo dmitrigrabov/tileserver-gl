@@ -21,8 +21,7 @@ COPY . /usr/src/app
 
 ENV NODE_ENV="production"
 
-RUN cd /usr/src/app && npm install --production
-
+RUN cd /usr/src/app && yarn install --production
 
 FROM node:10-buster-slim AS final
 
@@ -46,10 +45,12 @@ ENV CHOKIDAR_INTERVAL=500
 VOLUME /data
 WORKDIR /data
 
-EXPOSE 80
+RUN mv /app/data /
+
+EXPOSE 8080
 
 USER node:node
 
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
 
-CMD ["-p", "80"]
+CMD ["-p", "8080", "--config", "config.json"]

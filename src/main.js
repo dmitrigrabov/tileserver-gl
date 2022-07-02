@@ -176,8 +176,10 @@ const startWithMBTiles = (mbtilesFile) => {
 };
 
 fs.stat(path.resolve(opts.config), (err, stats) => {
+  console.log({err, stats, ...opts})
   if (err || !stats.isFile() || stats.size === 0) {
     let mbtiles = opts.mbtiles;
+    console.log('mbtiles: ', mbtiles)
     if (!mbtiles) {
       // try to find in the cwd
       const files = fs.readdirSync(process.cwd());

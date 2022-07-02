@@ -87,6 +87,7 @@ const getFontPbf = (allowedFonts, fontPath, name, range, fallbacks) => new Promi
     delete fallbacks[name];
     fs.readFile(filename, (err, data) => {
       if (err) {
+        console.log(err)
         console.error(`ERROR: Font not found: ${name}`);
         if (fallbacks && Object.keys(fallbacks).length) {
           let fallbackName;

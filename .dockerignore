@@ -1,5 +1,6 @@
 *
 !src
+!data
 !public
 !package.json
 !package-lock.json
