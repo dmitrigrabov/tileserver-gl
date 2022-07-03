@@ -36,7 +36,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /usr/src/app /app
+COPY --from=builder --chown=node:node /usr/src/app /app
 
 ENV NODE_ENV="production"
 ENV CHOKIDAR_USEPOLLING=1
@@ -45,11 +45,15 @@ ENV CHOKIDAR_INTERVAL=500
 VOLUME /data
 WORKDIR /data
 
+RUN chown -R node:node /data
 RUN mv /app/data /
 
 EXPOSE 8080
 
 USER node:node
+
+RUN ls -alh /data
+RUN ls -alh /app
 
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
 
