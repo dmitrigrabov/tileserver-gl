@@ -586,8 +586,9 @@ module.exports = {
               });
             } else if (protocol === 'fonts') {
               const parts = req.url.split('/');
-              const fontstack = unescape(parts[2]);
-              const range = parts[3].split('.')[0];
+              const fontstack = unescape(parts[3]);
+              const range = parts[4].split('.')[0];
+              console.log({fontstack, range, existingFonts})
               utils.getFontsPbf(
                 null, options.paths[protocol], fontstack, range, existingFonts
               ).then(concated => {
