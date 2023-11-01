@@ -4,6 +4,7 @@
 
 import fs from 'node:fs';
 import path from 'path';
+import progress from 'request-progress';
 import { fileURLToPath } from 'url';
 import request from 'request';
 import { server } from './server.js';
