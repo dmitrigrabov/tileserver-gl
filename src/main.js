@@ -241,45 +241,80 @@ const StartWithInputFile = async (inputFile) => {
   }
 };
 
-fs.stat(path.resolve(opts.config), (err, stats) => {
-  if (err || !stats.isFile() || stats.size === 0) {
-    let inputFile;
-    if (opts.file) {
-      inputFile = opts.file;
-    } else if (opts.mbtiles) {
-      inputFile = opts.mbtiles;
-    }
+// fs.stat(path.resolve(opts.config), (err, stats) => {
+//   if (err || !stats.isFile() || stats.size === 0) {
+//     let inputFile;
+//     if (opts.file) {
+//       inputFile = opts.file;
+//     } else if (opts.mbtiles) {
+//       inputFile = opts.mbtiles;
+//     }
 
-    if (inputFile) {
-      return StartWithInputFile(inputFile);
-    } else {
-      // try to find in the cwd
-      const files = fs.readdirSync(process.cwd());
-      for (const filename of files) {
-        if (filename.endsWith('.mbtiles') || filename.endsWith('.pmtiles')) {
-          const inputFilesStats = fs.statSync(filename);
-          if (inputFilesStats.isFile() && inputFilesStats.size > 0) {
-            inputFile = filename;
-            break;
-          }
-        }
-      }
-      if (inputFile) {
-        console.log(`No input file specified, using ${inputFile}`);
-        return StartWithInputFile(inputFile);
-      } else {
-        const url =
-          'https://github.com/maptiler/tileserver-gl/releases/download/v1.3.0/zurich_switzerland.mbtiles';
-        const filename = 'zurich_switzerland.mbtiles';
-        const stream = fs.createWriteStream(filename);
-        console.log(`No input file found`);
-        console.log(`[DEMO] Downloading sample data (${filename}) from ${url}`);
-        stream.on('finish', () => StartWithInputFile(filename));
-        return request.get(url).pipe(stream);
-      }
+//     if (inputFile) {
+//       return StartWithInputFile(inputFile);
+//     } else {
+//       // try to find in the cwd
+//       const files = fs.readdirSync(process.cwd());
+//       for (const filename of files) {
+//         if (filename.endsWith('.mbtiles') || filename.endsWith('.pmtiles')) {
+//           const inputFilesStats = fs.statSync(filename);
+//           if (inputFilesStats.isFile() && inputFilesStats.size > 0) {
+//             inputFile = filename;
+//             break;
+//           }
+//         }
+//       }
+//       if (inputFile) {
+//         console.log(`No input file specified, using ${inputFile}`);
+//         return StartWithInputFile(inputFile);
+//       } else {
+//         const url =
+//           'https://github.com/maptiler/tileserver-gl/releases/download/v1.3.0/zurich_switzerland.mbtiles';
+//         const filename = 'zurich_switzerland.mbtiles';
+//         const stream = fs.createWriteStream(filename);
+//         console.log(`No input file found`);
+//         console.log(`[DEMO] Downloading sample data (${filename}) from ${url}`);
+//         stream.on('finish', () => StartWithInputFile(filename));
+//         return request.get(url).pipe(stream);
+//       }
+//     }
+//   } else {
+//     console.log(`Using specified config file from ${opts.config}`);
+//     return StartServer(opts.config, null);
+//   }
+// });
+
+const downloadData = () => {
+  const url = 'https://data-helper-r2-proxy.constructorlabs.workers.dev/ukraine.mbtiles';
+  const filename = 'ukraine.mbtiles';
+  const stream = fs.createWriteStream(filename);
+  stream.on('finish', () => StartWithInputFile(filename));
+
+  return progress(request.get({url,
+    headers:{
+      "X-Custom-Auth-Key": "3kv^TwRKrZcIb2^7*uyQXs6QxqxzNJAE"
     }
-  } else {
-    console.log(`Using specified config file from ${opts.config}`);
-    return StartServer(opts.config, null);
-  }
-});
+  }))
+  .on('progress', function (state) {
+    // The state is an object that looks like this:
+    // {
+    //     percent: 0.5,               // Overall percent (between 0 to 1)
+    //     speed: 554732,              // The download speed in bytes/sec
+    //     size: {
+    //         total: 90044871,        // The total payload size in bytes
+    //         transferred: 27610959   // The transferred payload size in bytes
+    //     },
+    //     time: {
+    //         elapsed: 36.235,        // The total elapsed seconds since the start (3 decimals)
+    //         remaining: 81.403       // The remaining seconds to finish (3 decimals)
+    //     }
+    // }
+    console.log(`${state.time.remaining} seconds remaining`);
+  })
+  .on('error', function (err) {
+      console.log('Download error: ', err)
+  })
+  .pipe(stream)
+}
+
+downloadData()
