@@ -103,10 +103,7 @@ const StartWithInputFile = async (inputFile) => {
     }
   }
 
-  const styleDir = path.resolve(
-    __dirname,
-    '../node_modules/tileserver-gl-styles/',
-  );
+  const styleDir = '/map-settings'
 
   const config = {
     options: {
@@ -230,6 +227,9 @@ const StartWithInputFile = async (inputFile) => {
           };
         }
 
+        console.log("Config: ")
+        console.log(JSON.stringify(config, undefined, 2));
+
         if (opts.verbose) {
           console.log(JSON.stringify(config, undefined, 2));
         } else {
@@ -242,60 +242,37 @@ const StartWithInputFile = async (inputFile) => {
   }
 };
 
-// fs.stat(path.resolve(opts.config), (err, stats) => {
-//   if (err || !stats.isFile() || stats.size === 0) {
-//     let inputFile;
-//     if (opts.file) {
-//       inputFile = opts.file;
-//     } else if (opts.mbtiles) {
-//       inputFile = opts.mbtiles;
-//     }
-
-//     if (inputFile) {
-//       return StartWithInputFile(inputFile);
-//     } else {
-//       // try to find in the cwd
-//       const files = fs.readdirSync(process.cwd());
-//       for (const filename of files) {
-//         if (filename.endsWith('.mbtiles') || filename.endsWith('.pmtiles')) {
-//           const inputFilesStats = fs.statSync(filename);
-//           if (inputFilesStats.isFile() && inputFilesStats.size > 0) {
-//             inputFile = filename;
-//             break;
-//           }
-//         }
-//       }
-//       if (inputFile) {
-//         console.log(`No input file specified, using ${inputFile}`);
-//         return StartWithInputFile(inputFile);
-//       } else {
-//         const url =
-//           'https://github.com/maptiler/tileserver-gl/releases/download/v1.3.0/zurich_switzerland.mbtiles';
-//         const filename = 'zurich_switzerland.mbtiles';
-//         const stream = fs.createWriteStream(filename);
-//         console.log(`No input file found`);
-//         console.log(`[DEMO] Downloading sample data (${filename}) from ${url}`);
-//         stream.on('finish', () => StartWithInputFile(filename));
-//         return request.get(url).pipe(stream);
-//       }
-//     }
-//   } else {
-//     console.log(`Using specified config file from ${opts.config}`);
-//     return StartServer(opts.config, null);
-//   }
-// });
-
 const downloadData = () => {
-  const url = 'https://data-helper-r2-proxy.constructorlabs.workers.dev/ukraine.mbtiles';
-  const filename = 'ukraine.mbtiles';
+  const url = 'https://www.googleapis.com/drive/v3/files/19i8nCtFVrUl5ZC-XCaC8l0o5QtT7zaFY?alt=media&key=AIzaSyCJ7BbY144_ovZxKUs2aUuS123svbkbwTA';
+  const filename = 'planet.mbtiles';
+
+  const fileExists = fs.existsSync(filename)
+
+  console.log("File exists: ", fileExists)
+  
+  // if(fileExists) {
+  //   return StartWithInputFile(filename)
+  // }
+
+  console.log("File exists: ", fileExists)
+  
+  console.log("Current directory:", __dirname);
+  
+// Function to get current filenames 
+// in directory 
+let filenames = fs.readdirSync('/map-settings'); 
+  
+console.log("\nFilenames in directory: /map-settings"); 
+filenames.forEach((file) => { 
+    console.log("File:", file); 
+});
+
+  console.log("DOWNLOADING FILE")
+
   const stream = fs.createWriteStream(filename);
   stream.on('finish', () => StartWithInputFile(filename));
 
-  return progress(request.get({url,
-    headers:{
-      "X-Custom-Auth-Key": "3kv^TwRKrZcIb2^7*uyQXs6QxqxzNJAE"
-    }
-  }))
+  return progress(request.get({url}))
   .on('progress', function (state) {
     // The state is an object that looks like this:
     // {

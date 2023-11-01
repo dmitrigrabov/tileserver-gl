@@ -111,10 +111,14 @@ RUN mkdir -p /data && chown node:node /data
 VOLUME /data
 WORKDIR /data
 
+RUN mv /usr/src/app/data /map-settings
+
 EXPOSE 8080
 
 USER node:node
 
 ENTRYPOINT ["/usr/src/app/docker-entrypoint.sh"]
+
+CMD ["-p", "8080", "--config", "config.json", "--verbose"]
 
 HEALTHCHECK CMD node /usr/src/app/src/healthcheck.js
