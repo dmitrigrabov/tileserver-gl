@@ -17,5 +17,5 @@ primary_region = "lhr"
   processes = ["app"]
 
 [mounts]
-  source="planetserver_volume"
+  source="planetserver_volume2"
   destination="/data"

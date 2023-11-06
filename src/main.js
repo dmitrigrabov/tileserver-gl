@@ -243,8 +243,8 @@ const StartWithInputFile = async (inputFile) => {
 };
 
 const downloadData = () => {
-  const url = 'https://www.googleapis.com/drive/v3/files/19i8nCtFVrUl5ZC-XCaC8l0o5QtT7zaFY?alt=media&key=AIzaSyCJ7BbY144_ovZxKUs2aUuS123svbkbwTA';
-  const filename = 'planet.mbtiles';
+  const url = 'https://planet.data-helper.net/planet4.mbtiles';
+  const filename = 'planet4.mbtiles';
 
   const fileExists = fs.existsSync(filename)
 
