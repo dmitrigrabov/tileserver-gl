@@ -24,6 +24,7 @@ if (args.length >= 3 && args[2][0] !== '-') {
 }
 
 import { program } from 'commander';
+import { on } from 'node:events';
 program
   .description('tileserver-gl startup options')
   .usage('tileserver-gl [mbtiles] [options]')
@@ -242,37 +243,36 @@ const StartWithInputFile = async (inputFile) => {
   }
 };
 
-const downloadData = () => {
-  const url = 'https://planet.data-helper.net/planet4.mbtiles';
-  const filename = 'planet4.mbtiles';
 
+const downloadData = ({url, filename, onFinish}) => {
   const fileExists = fs.existsSync(filename)
 
-  console.log("File exists: ", fileExists)
+  console.log(`File ${filename} exists: `, fileExists)
   
-  // if(fileExists) {
-  //   return StartWithInputFile(filename)
-  // }
-
-  console.log("File exists: ", fileExists)
+  if(fileExists) {
+    StartWithInputFile(filename)
+    return
+  }
   
   console.log("Current directory:", __dirname);
   
-// Function to get current filenames 
-// in directory 
-let filenames = fs.readdirSync('/map-settings'); 
-  
-console.log("\nFilenames in directory: /map-settings"); 
-filenames.forEach((file) => { 
-    console.log("File:", file); 
-});
+  // Function to get current filenames 
+  // in directory 
+  // let filenames = fs.readdirSync('/map-settings'); 
 
-  console.log("DOWNLOADING FILE")
+  // console.log("\nFilenames in directory: /map-settings"); 
+
+  // filenames.forEach((file) => { 
+  //     console.log("File:", file); 
+  // });
+
+  // console.log("DOWNLOADING FILE", )
 
   const stream = fs.createWriteStream(filename);
-  stream.on('finish', () => StartWithInputFile(filename));
 
-  return progress(request.get({url}))
+  stream.on('finish', () => onFinish())
+
+  return progress(request.get({url /*, timeout: 100000000*/}))
   .on('progress', function (state) {
     // The state is an object that looks like this:
     // {
@@ -287,7 +287,7 @@ filenames.forEach((file) => {
     //         remaining: 81.403       // The remaining seconds to finish (3 decimals)
     //     }
     // }
-    console.log(`${state.time.remaining} seconds remaining`);
+    console.log(`${filename}: ${state.time.remaining} seconds remaining`);
   })
   .on('error', function (err) {
       console.log('Download error: ', err)
@@ -295,4 +295,17 @@ filenames.forEach((file) => {
   .pipe(stream)
 }
 
-downloadData()
+downloadData({
+  url: 'https://planet.data-helper.net/planet4.mbtiles',
+  filename: 'planet4.mbtiles',
+  onFinish: () => {
+    StartWithInputFile('planet4.mbtiles')
+
+    // downloadData({
+    //   url: 'https://planet.data-helper.net/planet4.mbtiles',
+    //   filename: 'planet4.mbtiles',
+    //   onFinish: () => {}
+    // })
+  }
+})
+

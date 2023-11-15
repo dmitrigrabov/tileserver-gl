@@ -5811,7 +5811,7 @@
   "sources": {
     "openmaptiles": {
       "type": "vector",
-      "url": "mbtiles://ukraine.mbtiles"
+      "url": "mbtiles://planet4.mbtiles"
     }
   },
   "sprite": "https://openmaptiles.github.io/osm-bright-gl-style/sprite",
